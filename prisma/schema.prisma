@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id        String      @id @default(cuid())
+  email     String      @unique
+  name      String
+  password  String
+  type      Boolean
+  locals    Local[]
+  //Add favroites
+  Favorites Favorites?
+  Reservations Reservations?
+}
+
+model Favorites {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique  
+  product   Product[] 
+  local     Local[]   
+  service   Service[] 
+
+}
+
+model Reservations {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
+  service   Service  @relation(fields: [serviceId], references: [id])
+  serviceId String
+}
+
+model Local {
+  id           String      @id @default(cuid())
+  name         String
+  location     String //Consider changing to REAL
+  whatsapp     Int
+  instagram    String
+  facebook     String
+  webpage      String
+  image        String
+  users        User[]
+  hours        LocalHours? //Primsa forces you to make them nullable  
+  Favorites    Favorites[]
+  services     Service[]
+  localTypes   LocalTypes[] 
+  product      Product[]
+}
+
+model LocalHours {
+  id         String @id @default(cuid())
+  local      Local  @relation(fields: [localId], references: [id])
+  localId    String @unique
+  dayNumber  Int    @map("day_number")
+  startTime  String @map("start_time")
+  endTime    String @map("end_time")
+  startTime2 String @map("start_time2")
+  endTime2   String @map("end_time2")
+}
+
+model LocalTypes {
+  id        String @id @default(cuid())
+  name      String
+  locals    Local[]
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  updatedAt   DateTime    @updatedAt
+  brand       String
+  mesurement  String
+  imgURL      String      @map("img_url")
+  price       Float?
+  description String
+  Favorites   Favorites[]
+  local       Local[]
+  type        ProductTypes[]
+}
+
+model ProductTypes {
+  id      String @id @default(cuid())
+  name    String
+  product Product[]
+}
+
+model Service {
+  id            String      @id @default(cuid())
+  name          String
+  local         Local @relation(fields: [localId], references: [id])
+  localId       String @unique
+  description   String
+  reservtionURL String      @map("reservation_url")
+  Favorites     Favorites[]
+  Reservations  Reservations[]
+  Hours         ServiceHours?
+}
+
+model ServiceHours {
+  id         String @id @default(cuid())
+  service    Service @relation(fields: [serviceId], references: [id])
+  serviceId  String @unique
+  dayNumber  Int    @map("day_number")
+  startTime  String @map("start_time")
+  endTime    String @map("end_time")
+  startTime2 String @map("start_time2")
+  endTime2   String @map("end_time2")
+}
+
+
+
+
+
