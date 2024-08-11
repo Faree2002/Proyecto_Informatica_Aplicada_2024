@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  const seba = await prisma.user.upsert({
+  const seba = await prisma.user.upsert({ //Upsert updates it if it exists, if it does not exist, it creates it
     where: {
       email: 'sebaperezlavooy@gmail.com', // The unique identifier
     },

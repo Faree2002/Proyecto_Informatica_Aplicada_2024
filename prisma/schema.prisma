@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -13,63 +9,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//Manual del usuario
+//Pruebas
+//
 
 model User {
-  id        String      @id @default(cuid())
-  email     String      @unique
-  name      String
-  password  String
-  type      Boolean
-  locals    Local[]
-  //Add favroites
-  Favorites Favorites?
-  Reservations Reservations?
+  id                String              @id @default(cuid())
+  email             String              @unique
+  name              String
+  password          String
+  type              Boolean
+  locals            Local[]
+  localFavorites    LocalFavorites[]
+  productFavorites  ProductFavorites[]
+  Reservations      Reservations?
 }
 
-model Favorites {
+model LocalFavorites {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @unique  
-  product   Product[] 
-  local     Local[]   
-  service   Service[] 
-
+  local     Local    @relation(fields: [localId], references: [id])
+  localId   String   
+  dateFrom  DateTime @map("date_from")
+  dateTo    DateTime @map("date_to")
 }
 
-model Reservations {
+model ProductFavorites {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
   userId    String   @unique
-  service   Service  @relation(fields: [serviceId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String
+  dateFrom  DateTime @map("date_from")
+  dateTo    DateTime @map("date_to")
+}
+
+model Reservations {
+  id        String        @id @default(cuid())
+  user      User          @relation(fields: [userId], references: [id])
+  userId    String        @unique
+  service   LocalService  @relation(fields: [serviceId], references: [id])
   serviceId String
+  dateTime  DateTime      @map("date_time")
+  comment   String
 }
 
 model Local {
-  id           String      @id @default(cuid())
-  name         String @unique
-  location     String //Consider changing to REAL
-  whatsapp     Int @unique
-  instagram    String?
-  facebook     String?
-  webpage      String?
-  image        String?
-  users        User[]
-  hours        LocalHours? //Primsa forces you to make them nullable  
-  Favorites    Favorites[]
-  services     Service[]
-  localTypes   LocalTypes[] 
-  product      Product[]
+  id                String   @id @default(cuid())
+  name              String   @unique
+  location          String //Consider changing to REAL
+  whatsapp          Int      @unique
+  instagram         String?
+  facebook          String?
+  webpage           String?
+  image             String?
+  dateFrom          DateTime @map("date_from")
+  dateTo            DateTime @map("date_to")
+  users             User[]
+  hours             LocalHours? //Primsa forces you to make them nullable  
+  localFavorites    LocalFavorites[]
+  services          LocalService[]
+  localTypes        LocalTypes @relation(fields: [localTypeID], references: [id])
+  localTypeID       String 
+  product           LocalProduct[]
+  localDiscountDeal LocalDiscountDeal[]
+  viewLocal         ViewLocal[]
 }
+
+model LocalProduct {
+  id        String   @id @default(cuid())
+  local     Local    @relation(fields: [localId], references: [id])
+  localId   String   @unique
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String   @unique
+  dateFrom  DateTime @map("date_from")
+  dateTo    DateTime @map("date_to")
+} 
 
 model LocalHours {
   id         String @id @default(cuid())
   local      Local  @relation(fields: [localId], references: [id])
   localId    String @unique
   dayNumber  Int    @map("day_number")
-  startTime  String @map("start_time")
-  endTime    String @map("end_time")
-  startTime2 String @map("start_time2")
-  endTime2   String @map("end_time2")
+  AMHourFrom String @map("am_hour_from")
+  AMHourTo   String @map("am_hour_to")
+  PMHourFrom String @map("pm_hour_from")
+  PMHourTo   String @map("pm_hour_to")
+  EXHourFrom String @map("ex_hour_from")
+  EXHourTo   String @map("ex_hour_to")
 }
 
 model LocalTypes {
@@ -78,49 +106,78 @@ model LocalTypes {
   locals    Local[]
 }
 
-model Product {
-  id          String      @id @default(cuid())
-  name        String
-  updatedAt   DateTime    @updatedAt
-  brand       String
-  mesurement  String
-  imgURL      String      @map("img_url")
-  price       Float?
-  description String
-  Favorites   Favorites[]
-  local       Local[]
-  type        ProductTypes[]
+model LocalDiscountDeal {
+  id           String @id @default(cuid())
+  local        Local @relation(fields: [localId], references: [id])
+  localId      String
+  dealDiscount String @map("deal_discount")
+  dateFrom     DateTime @map("date_from")
+  dateTo       DateTime @map("date_to")
+  active       Boolean
 }
 
-model ProductTypes {
+model ViewLocal {
+  id      String  @id @default(cuid())
+  local   Local   @relation(fields: [localId], references: [id])
+  localId String
+}
+
+model Product {
+  id               String              @id @default(cuid())
+  name             String          
+  updatedAt        DateTime            @updatedAt
+  brand            String          
+  mesurement       String          
+  imgURL           String              @map("img_url")
+  price            Float?
+  description      String
+  productFavorites ProductFavorites[]
+  local            LocalProduct[]
+  type             ProductType         @relation(fields: [productTypeId], references: [id])
+  productDiscountDeal ProductDiscountDeal[]
+  productTypeId    String            
+}
+
+model ProductType {
   id      String @id @default(cuid())
   name    String
   product Product[]
 }
 
-model Service {
-  id            String      @id @default(cuid())
+model ProductDiscountDeal {
+  id           String  @id @default(cuid())
+  product      Product @relation(fields: [productId], references: [id])
+  productId    String
+  dealDiscount String @map("deal_discount")
+  dateFrom     DateTime @map("date_from")
+  dateTo       DateTime @map("date_to")
+  active       Boolean
+}
+
+model LocalService {
+  id            String    @id @default(cuid())
   name          String
-  local         Local @relation(fields: [localId], references: [id])
-  localId       String @unique
+  local         Local     @relation(fields: [localId], references: [id])
+  localId       String    @unique
+  service       Service   @relation(fields: [serviceId], references: [id])
+  serviceId     String    @unique
+  dateFrom      DateTime  @map("date_from")
+  dateTo        DateTime  @map("date_to")
+  AMHourFrom    String    @map("am_hour_from")
+  AMHourTo      String    @map("am_hour_to")
+  PMHourFrom    String    @map("pm_hour_from")
+  PMHourTo      String    @map("pm_hour_to")
+  EXHourFrom    String    @map("ex_hour_from")
+  EXHourTo      String    @map("ex_hour_to")
+  Reservations  Reservations[] 
+}
+
+model Service {
+  id            String          @id @default(cuid())
+  localService  LocalService[]
+  reservtionURL String          @map("reservation_url")
   description   String
-  reservtionURL String      @map("reservation_url")
-  Favorites     Favorites[]
-  Reservations  Reservations[]
-  Hours         ServiceHours?
 }
-
-model ServiceHours {
-  id         String @id @default(cuid())
-  service    Service @relation(fields: [serviceId], references: [id])
-  serviceId  String @unique
-  dayNumber  Int    @map("day_number")
-  startTime  String @map("start_time")
-  endTime    String @map("end_time")
-  startTime2 String @map("start_time2")
-  endTime2   String @map("end_time2")
-}
-
 
 
 
