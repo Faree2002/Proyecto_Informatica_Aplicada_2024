@@ -5,13 +5,13 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     // Simula un retraso antes de navegar a la pantalla principal
     setTimeout(() => {
-      navigation.replace('MainApp');  // Reemplaza 'MainApp' con tu componente principal
+      navigation.replace('MainApp');
     }, 3000); // 3 segundos de espera
   }, [navigation]);
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/LogoLSM.png')} style={styles.logo} />
+      <Image source={require('../assets/LogoLSM.png')} style={styles.logo} />
       <Text style={styles.title}>LSM MultiApp</Text>
       <Text style={styles.footer}>Powered by AI</Text>
       <Text style={styles.developer}>Lukitas developerPro69</Text>

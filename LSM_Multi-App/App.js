@@ -1,77 +1,72 @@
-import React from 'react';
+import { StyleSheet, Text, View, Image } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/stack"; // StackNavigator para manejar las pantallas
-import { FontAwesome, Entypo, AntDesign } from "@expo/vector-icons";
 
-//pantallas
+//screen imports
 import HomeScreen from "./screens/homeScreen";
 import SearchScreen from "./screens/searchScreen";
 import RecentSearchScreen from "./screens/recentSearchScreen";
-import SplashScreen from "./screens/SplashScreen"; // Fabri
+
+// icon imports
+import HomeIcon from './assets/icons/Home.png';
+import SearchIcon from './assets/icons/Search.png';
+import FavoriteIcon from './assets/icons/favorite.png';
 
 const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
-
-const MainApp = () => (
-  <Tab.Navigator
-    screenOptions={{
-      tabBarActiveTintColor: "#fff",
-      tabBarInactiveTintColor: "gray",
-      headerTintColor: "#fff",
-      headerShown: false,
-      tabBarShowLabel: false,
-      tabBarStyle: {
-        backgroundColor: "#183153",
-        height: 60,
-      },
-    }}
-  >
-    <Tab.Screen
-      name="Home"
-      component={HomeScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => {
-          return <FontAwesome name="home" size={size} color={color} />;
-        },
-      }}
-    />
-    <Tab.Screen
-      name="Search"
-      component={SearchScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => {
-          return <Entypo name="magnifying-glass" size={size} color={color} />;
-        },
-      }}
-    />
-    <Tab.Screen
-      name="Recent Search"
-      component={RecentSearchScreen}
-      options={{
-        tabBarIcon: ({ color, size }) => {
-          return <AntDesign name="clockcircle" size={size} color={color} />;
-        },
-      }}
-    />
-  </Tab.Navigator>
-);
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SplashScreen">
-        <Stack.Screen 
-          name="SplashScreen" 
-          component={SplashScreen} 
-          options={{ headerShown: false }} 
+      <Tab.Navigator
+        screenOptions={{
+          tabBarActiveTintColor: "#fff",
+          tabBarInactiveTintColor: "gray",
+          headerTintColor: "#fff",
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: {
+            backgroundColor: "#183153",
+            height: 60,
+          },
+        }}
+      >
+        <Tab.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Image source={HomeIcon} style={{ width: size, height: size, tintColor: color }} />
+            ),
+          }}
         />
-        <Stack.Screen 
-          name="MainApp" 
-          component={MainApp} 
-          options={{ headerShown: false }} 
+        <Tab.Screen
+          name="Search"
+          component={SearchScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Image source={SearchIcon} style={{ width: size, height: size, tintColor: color }} />
+            ),
+          }}
         />
-      </Stack.Navigator>
+        <Tab.Screen
+          name="Recent Search"
+          component={RecentSearchScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Image source={FavoriteIcon} style={{ width: size, height: size, tintColor: color }} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
