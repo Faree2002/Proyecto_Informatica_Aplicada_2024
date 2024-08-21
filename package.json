@@ -16,7 +16,8 @@
     "typescript": "^5.5.4"
   },
   "dependencies": {
-    "@prisma/client": "^5.17.0"
+    "@prisma/client": "^5.17.0",
+    "yarn": "^1.22.22"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
